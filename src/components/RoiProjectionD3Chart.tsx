@@ -14,6 +14,8 @@ import {
   Sliders
 } from 'lucide-react';
 
+export type SavingsCadence = 'monthly' | 'quarterly' | 'annual';
+
 export interface RoiProjectionD3ChartProps {
   totalAnnualValue: number;
   annualHoursSaved: number;
@@ -26,6 +28,8 @@ export interface RoiProjectionD3ChartProps {
   beds: number;
   projectionModel?: 'conservative' | 'aggressive';
   onToggleProjectionModel?: (model: 'conservative' | 'aggressive') => void;
+  savingsCadence?: SavingsCadence;
+  onToggleSavingsCadence?: (cadence: SavingsCadence) => void;
 }
 
 interface YearProjection {
@@ -57,11 +61,29 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
   beds,
   projectionModel = 'conservative',
   onToggleProjectionModel,
+  savingsCadence,
+  onToggleSavingsCadence,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [viewMode, setViewMode] = useState<'annual' | 'cumulative'>('annual');
   const [chartType, setChartType] = useState<'dual' | 'stacked'>('dual');
+  const [internalCadence, setInternalCadence] = useState<SavingsCadence>('annual');
+  const activeCadence: SavingsCadence = savingsCadence ?? internalCadence;
+
+  const handleCadenceChange = (cadence: SavingsCadence) => {
+    if (onToggleSavingsCadence) {
+      onToggleSavingsCadence(cadence);
+    } else {
+      setInternalCadence(cadence);
+    }
+  };
+
+  const cadenceDivisor = activeCadence === 'monthly' ? 12 : activeCadence === 'quarterly' ? 4 : 1;
+  const cadenceSuffix = activeCadence === 'monthly' ? '/ mo' : activeCadence === 'quarterly' ? '/ qtr' : '/ yr';
+  const cadenceFull = activeCadence === 'monthly' ? 'Monthly' : activeCadence === 'quarterly' ? 'Quarterly' : 'Annual';
+  const cadenceHoursSuffix = activeCadence === 'monthly' ? 'hrs / mo' : activeCadence === 'quarterly' ? 'hrs / qtr' : 'hrs / yr';
+
   const [activeTooltip, setActiveTooltip] = useState<{
     x: number;
     y: number;
@@ -72,75 +94,117 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
   // Compute 3-Year Projection data dynamically based on the chosen projection model:
   // - Conservative: Risk-adjusted rollout (74% Y1, 92% Y2, 104% Y3) with generous safety buffers
   // - Aggressive: Accelerated enterprise adoption (90% Y1, 110% Y2, 128% Y3) with high-velocity discharge placement
+  // Scaled by selected savings cadence (monthly, quarterly, or annual)
   const projectionData: YearProjection[] = React.useMemo(() => {
     const isAggressive = projectionModel === 'aggressive';
     const y1Adoption = isAggressive ? 0.90 : 0.74;
     const y2Adoption = isAggressive ? 1.10 : 0.92;
     const y3Adoption = isAggressive ? 1.28 : 1.04;
 
-    const y1Savings = Math.round(totalAnnualValue * y1Adoption);
-    const y1Hours = Math.round(annualHoursSaved * y1Adoption);
-    const y1Cost = Math.round(estimatedAnnualCost * 1.12); // Initial configuration & FHIR interface setup
-    const y1Net = y1Savings - y1Cost;
+    const rawY1Savings = Math.round(totalAnnualValue * y1Adoption);
+    const rawY1Hours = Math.round(annualHoursSaved * y1Adoption);
+    const rawY1Cost = Math.round(estimatedAnnualCost * 1.12); // Initial configuration & FHIR interface setup
+    const rawY1Net = rawY1Savings - rawY1Cost;
 
-    const y2Savings = Math.round(totalAnnualValue * y2Adoption);
-    const y2Hours = Math.round(annualHoursSaved * y2Adoption);
-    const y2Cost = Math.round(estimatedAnnualCost);
-    const y2Net = y2Savings - y2Cost;
+    const rawY2Savings = Math.round(totalAnnualValue * y2Adoption);
+    const rawY2Hours = Math.round(annualHoursSaved * y2Adoption);
+    const rawY2Cost = Math.round(estimatedAnnualCost);
+    const rawY2Net = rawY2Savings - rawY2Cost;
 
-    const y3Savings = Math.round(totalAnnualValue * y3Adoption);
-    const y3Hours = Math.round(annualHoursSaved * y3Adoption);
-    const y3Cost = Math.round(estimatedAnnualCost);
-    const y3Net = y3Savings - y3Cost;
+    const rawY3Savings = Math.round(totalAnnualValue * y3Adoption);
+    const rawY3Hours = Math.round(annualHoursSaved * y3Adoption);
+    const rawY3Cost = Math.round(estimatedAnnualCost);
+    const rawY3Net = rawY3Savings - rawY3Cost;
+
+    const y1Savings = Math.round(rawY1Savings / cadenceDivisor);
+    const y1Hours = Math.round(rawY1Hours / cadenceDivisor);
+    const y1Cost = Math.round(rawY1Cost / cadenceDivisor);
+    const y1Net = Math.round(rawY1Net / cadenceDivisor);
+
+    const y2Savings = Math.round(rawY2Savings / cadenceDivisor);
+    const y2Hours = Math.round(rawY2Hours / cadenceDivisor);
+    const y2Cost = Math.round(rawY2Cost / cadenceDivisor);
+    const y2Net = Math.round(rawY2Net / cadenceDivisor);
+
+    const y3Savings = Math.round(rawY3Savings / cadenceDivisor);
+    const y3Hours = Math.round(rawY3Hours / cadenceDivisor);
+    const y3Cost = Math.round(rawY3Cost / cadenceDivisor);
+    const y3Net = Math.round(rawY3Net / cadenceDivisor);
+
+    const y1Label = activeCadence === 'monthly'
+      ? 'Year 1 (Monthly)'
+      : activeCadence === 'quarterly'
+      ? 'Year 1 (Quarterly)'
+      : 'Year 1 (Rollout)';
+    const y2Label = activeCadence === 'monthly'
+      ? 'Year 2 (Monthly)'
+      : activeCadence === 'quarterly'
+      ? 'Year 2 (Quarterly)'
+      : 'Year 2 (Maturity)';
+    const y3Label = activeCadence === 'monthly'
+      ? 'Year 3 (Monthly)'
+      : activeCadence === 'quarterly'
+      ? 'Year 3 (Quarterly)'
+      : 'Year 3 (Optimized)';
 
     return [
       {
-        yearLabel: 'Year 1 (Rollout)',
+        yearLabel: y1Label,
         yearNum: 1,
         adoptionPct: Math.round(y1Adoption * 100),
         costSavings: y1Savings,
         hoursSaved: y1Hours,
         platformCost: y1Cost,
         netBenefit: y1Net,
-        handoffSavings: Math.round(capacityValue * y1Adoption),
-        overtimeSavings: Math.round(totalNursingBenefit * y1Adoption),
-        throughputSavings: Math.round(bedCapacityValue * y1Adoption),
+        handoffSavings: Math.round((capacityValue * y1Adoption) / cadenceDivisor),
+        overtimeSavings: Math.round((totalNursingBenefit * y1Adoption) / cadenceDivisor),
+        throughputSavings: Math.round((bedCapacityValue * y1Adoption) / cadenceDivisor),
         cumCostSavings: y1Savings,
         cumHoursSaved: y1Hours,
         cumNetBenefit: y1Net,
       },
       {
-        yearLabel: 'Year 2 (Maturity)',
+        yearLabel: y2Label,
         yearNum: 2,
         adoptionPct: Math.round(y2Adoption * 100),
         costSavings: y2Savings,
         hoursSaved: y2Hours,
         platformCost: y2Cost,
         netBenefit: y2Net,
-        handoffSavings: Math.round(capacityValue * y2Adoption),
-        overtimeSavings: Math.round(totalNursingBenefit * y2Adoption),
-        throughputSavings: Math.round(bedCapacityValue * y2Adoption),
+        handoffSavings: Math.round((capacityValue * y2Adoption) / cadenceDivisor),
+        overtimeSavings: Math.round((totalNursingBenefit * y2Adoption) / cadenceDivisor),
+        throughputSavings: Math.round((bedCapacityValue * y2Adoption) / cadenceDivisor),
         cumCostSavings: y1Savings + y2Savings,
         cumHoursSaved: y1Hours + y2Hours,
         cumNetBenefit: y1Net + y2Net,
       },
       {
-        yearLabel: 'Year 3 (Optimized)',
+        yearLabel: y3Label,
         yearNum: 3,
         adoptionPct: Math.round(y3Adoption * 100),
         costSavings: y3Savings,
         hoursSaved: y3Hours,
         platformCost: y3Cost,
         netBenefit: y3Net,
-        handoffSavings: Math.round(capacityValue * y3Adoption),
-        overtimeSavings: Math.round(totalNursingBenefit * y3Adoption),
-        throughputSavings: Math.round(bedCapacityValue * y3Adoption),
+        handoffSavings: Math.round((capacityValue * y3Adoption) / cadenceDivisor),
+        overtimeSavings: Math.round((totalNursingBenefit * y3Adoption) / cadenceDivisor),
+        throughputSavings: Math.round((bedCapacityValue * y3Adoption) / cadenceDivisor),
         cumCostSavings: y1Savings + y2Savings + y3Savings,
         cumHoursSaved: y1Hours + y2Hours + y3Hours,
         cumNetBenefit: y1Net + y2Net + y3Net,
       },
     ];
-  }, [totalAnnualValue, annualHoursSaved, capacityValue, totalNursingBenefit, bedCapacityValue, estimatedAnnualCost, projectionModel]);
+  }, [
+    totalAnnualValue, 
+    annualHoursSaved, 
+    capacityValue, 
+    totalNursingBenefit, 
+    bedCapacityValue, 
+    estimatedAnnualCost, 
+    projectionModel, 
+    cadenceDivisor, 
+    activeCadence
+  ]);
 
   // 3-Year totals for top callout cards
   const threeYearSavings = projectionData[2].cumCostSavings;
@@ -321,7 +385,8 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
         .attr('fill', '#0f766e')
         .text((d) => {
           const val = viewMode === 'annual' ? d.costSavings : d.cumCostSavings;
-          return val >= 1000000 ? `$${(val / 1000000).toFixed(1)}M` : `$${Math.round(val / 1000)}k`;
+          const formatted = val >= 1000000 ? `$${(val / 1000000).toFixed(1)}M` : `$${Math.round(val / 1000)}k`;
+          return `${formatted}${cadenceSuffix}`;
         });
 
       // Top Value Labels on Hours Bars
@@ -335,14 +400,19 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
         .attr('fill', '#4f46e5')
         .text((d) => {
           const val = viewMode === 'annual' ? d.hoursSaved : d.cumHoursSaved;
-          return `${(val / 1000).toFixed(1)}k h`;
+          const formatted = val >= 1000 ? `${(val / 1000).toFixed(1)}k` : `${Math.round(val)}`;
+          return `${formatted} h${cadenceSuffix}`;
         });
 
       // Right Axis (Operational Hours)
       const rightAxis = d3
         .axisRight(yHoursScale)
         .ticks(5)
-        .tickFormat((d) => `${(Number(d) / 1000).toFixed(0)}k hrs`);
+        .tickFormat((d) => {
+          const val = Number(d);
+          if (val >= 1000) return `${(val / 1000).toFixed(0)}k h`;
+          return `${Math.round(val)} h`;
+        });
 
       const rightAxisGroup = g
         .append('g')
@@ -363,7 +433,7 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
         .attr('fill', '#4f46e5')
         .attr('font-size', '11px')
         .attr('font-weight', '600')
-        .text('Operational Time (Hours Saved)');
+        .text(`Operational Time (${activeCadence === 'monthly' ? 'Hours / Month' : activeCadence === 'quarterly' ? 'Hours / Quarter' : 'Hours / Year'})`);
     } else {
       // Stacked Savings Breakdown view: Handoff, Overtime, Throughput
       const stackKeys = ['handoffSavings', 'overtimeSavings', 'throughputSavings'] as const;
@@ -417,9 +487,10 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
         .attr('font-weight', '700')
         .attr('fill', '#0f766e')
         .text((d) => {
-          return d.costSavings >= 1000000
+          const formatted = d.costSavings >= 1000000
             ? `$${(d.costSavings / 1000000).toFixed(2)}M`
             : `$${Math.round(d.costSavings / 1000)}k`;
+          return `${formatted}${cadenceSuffix}`;
         });
     }
 
@@ -448,7 +519,7 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
       .attr('fill', '#0f766e')
       .attr('font-size', '11px')
       .attr('font-weight', '600')
-      .text('Projected Cost Savings ($)');
+      .text(`Projected Cost Savings ($ ${cadenceSuffix})`);
 
     // Bottom Axis (Years)
     const bottomAxis = d3.axisBottom(x0Scale);
@@ -466,7 +537,7 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
       .attr('font-size', '11px')
       .attr('font-weight', '600')
       .attr('dy', '1.2em');
-  }, [projectionData, viewMode, chartType]);
+  }, [projectionData, viewMode, chartType, activeCadence]);
 
   // Set up ResizeObserver to re-render on container size changes
   useEffect(() => {
@@ -582,6 +653,51 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
             </div>
           )}
 
+          {/* Timeframe Granularity Toggle: Monthly, Quarterly, Annual */}
+          <div 
+            id="chart-cadence-toggle-group"
+            className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1"
+            role="group"
+            aria-label="Savings projection timeframe granularity"
+          >
+            <button
+              id="chart-cadence-monthly-btn"
+              type="button"
+              onClick={() => handleCadenceChange('monthly')}
+              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                activeCadence === 'monthly'
+                  ? 'bg-teal-700 text-white shadow-2xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              id="chart-cadence-quarterly-btn"
+              type="button"
+              onClick={() => handleCadenceChange('quarterly')}
+              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                activeCadence === 'quarterly'
+                  ? 'bg-teal-700 text-white shadow-2xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Quarterly
+            </button>
+            <button
+              id="chart-cadence-annual-btn"
+              type="button"
+              onClick={() => handleCadenceChange('annual')}
+              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                activeCadence === 'annual'
+                  ? 'bg-teal-700 text-white shadow-2xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Annual
+            </button>
+          </div>
+
           {/* Chart View Toggle: Dual Grouped vs Stacked Breakdown */}
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
             <button
@@ -592,7 +708,7 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Savings vs. Time (Dual Axis)
+              Savings vs. Time
             </button>
             <button
               onClick={() => setChartType('stacked')}
@@ -602,28 +718,28 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Savings Pillars
+              Pillars
             </button>
           </div>
 
-          {/* Timeframe Toggle: Annual vs Cumulative */}
+          {/* Timeframe Toggle: Annual/Run-Rate vs Cumulative */}
           {chartType === 'dual' && (
             <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
               <button
                 onClick={() => setViewMode('annual')}
                 className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                   viewMode === 'annual'
-                    ? 'bg-teal-700 text-white shadow-2xs'
+                    ? 'bg-slate-800 text-white shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Annual
+                {activeCadence === 'annual' ? 'Per-Year' : 'Per-Period'}
               </button>
               <button
                 onClick={() => setViewMode('cumulative')}
                 className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                   viewMode === 'cumulative'
-                    ? 'bg-teal-700 text-white shadow-2xs'
+                    ? 'bg-slate-800 text-white shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -634,44 +750,56 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
         </div>
       </div>
 
-      {/* 3-Year Summary Metric Cards */}
+      {/* Summary Metric Cards (Dynamic by Selected Cadence) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
         <div className="bg-teal-50/70 border border-teal-200/80 rounded-xl p-3.5">
           <div className="text-[11px] font-semibold text-teal-800 flex items-center justify-between">
-            <span>3-Year Gross Cost Savings</span>
+            <span>{activeCadence === 'annual' ? '3-Year Gross Savings' : `Avg ${cadenceFull} Gross Savings`}</span>
             <DollarSign className="w-3.5 h-3.5 text-teal-700" />
           </div>
           <div className="text-xl sm:text-2xl font-extrabold text-teal-900 font-sans mt-1">
-            ${(threeYearSavings / 1000000).toFixed(2)}M
+            {activeCadence === 'annual'
+              ? `$${(threeYearSavings / 1000000).toFixed(2)}M`
+              : `$${Math.round(threeYearSavings / 3).toLocaleString()}${cadenceSuffix}`}
           </div>
           <div className="text-[10px] text-teal-700 mt-0.5">
-            Combined bedside handoff, OT & throughput value
+            {activeCadence === 'annual'
+              ? 'Combined bedside handoff, OT & throughput value'
+              : `Year 3 Peak: $${projectionData[2].costSavings.toLocaleString()}${cadenceSuffix} • 3-Yr Total: $${(threeYearSavings * cadenceDivisor / 1000000).toFixed(2)}M`}
           </div>
         </div>
 
         <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-xl p-3.5">
           <div className="text-[11px] font-semibold text-indigo-800 flex items-center justify-between">
-            <span>3-Year Clinical Hours Reclaimed</span>
+            <span>{activeCadence === 'annual' ? '3-Year RN Hours Reclaimed' : `Avg ${cadenceFull} RN Hours Reclaimed`}</span>
             <Clock className="w-3.5 h-3.5 text-indigo-700" />
           </div>
           <div className="text-xl sm:text-2xl font-extrabold text-indigo-900 font-sans mt-1">
-            {threeYearHours.toLocaleString()} hrs
+            {activeCadence === 'annual'
+              ? `${threeYearHours.toLocaleString()} hrs`
+              : `${Math.round(threeYearHours / 3).toLocaleString()} ${cadenceHoursSuffix}`}
           </div>
           <div className="text-[10px] text-indigo-700 mt-0.5">
-            Equivalent to ~{Math.round(threeYearHours / 1920)} full-time RN shifts
+            {activeCadence === 'annual'
+              ? `Equivalent to ~${Math.round(threeYearHours / 1920)} full-time RN shifts`
+              : `Year 3 Peak: ${projectionData[2].hoursSaved.toLocaleString()} ${cadenceHoursSuffix}`}
           </div>
         </div>
 
         <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3.5">
           <div className="text-[11px] font-semibold text-emerald-800 flex items-center justify-between">
-            <span>3-Year Net Operational Benefit</span>
+            <span>{activeCadence === 'annual' ? '3-Year Net Benefit' : `Avg ${cadenceFull} Net Benefit`}</span>
             <TrendingUp className="w-3.5 h-3.5 text-emerald-700" />
           </div>
           <div className="text-xl sm:text-2xl font-extrabold text-emerald-900 font-sans mt-1">
-            ${(threeYearNet / 1000000).toFixed(2)}M
+            {activeCadence === 'annual'
+              ? `$${(threeYearNet / 1000000).toFixed(2)}M`
+              : `$${Math.round(threeYearNet / 3).toLocaleString()}${cadenceSuffix}`}
           </div>
           <div className="text-[10px] text-emerald-700 mt-0.5">
-            Net of estimated multi-year platform investment
+            {activeCadence === 'annual'
+              ? 'Net of multi-year platform investment'
+              : `Year 3 Peak: $${projectionData[2].netBenefit.toLocaleString()}${cadenceSuffix}`}
           </div>
         </div>
       </div>
@@ -698,7 +826,7 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
             <div className="font-bold text-slate-100 border-b border-slate-700 pb-1.5 mb-1.5 flex items-center justify-between">
               <span>{activeTooltip.data.yearLabel}</span>
               <span className="text-[10px] text-teal-300 font-semibold">
-                {activeTooltip.data.adoptionPct}% Adoption
+                {activeTooltip.data.adoptionPct}% Adoption ({cadenceFull})
               </span>
             </div>
 
@@ -706,7 +834,7 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
               <div className="flex items-center justify-between gap-4">
                 <span className="text-slate-400 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-xs bg-teal-500 inline-block"></span>
-                  Cost Savings:
+                  Savings ({cadenceSuffix.trim()}):
                 </span>
                 <span className="font-bold text-teal-300">
                   ${(viewMode === 'annual' ? activeTooltip.data.costSavings : activeTooltip.data.cumCostSavings).toLocaleString()}
@@ -719,12 +847,12 @@ export const RoiProjectionD3Chart: React.FC<RoiProjectionD3ChartProps> = ({
                   Hours Reclaimed:
                 </span>
                 <span className="font-bold text-indigo-300">
-                  {(viewMode === 'annual' ? activeTooltip.data.hoursSaved : activeTooltip.data.cumHoursSaved).toLocaleString()} hrs
+                  {(viewMode === 'annual' ? activeTooltip.data.hoursSaved : activeTooltip.data.cumHoursSaved).toLocaleString()} {cadenceHoursSuffix}
                 </span>
               </div>
 
               <div className="flex items-center justify-between gap-4 pt-1 border-t border-slate-800">
-                <span className="text-slate-400">Net Annual Return:</span>
+                <span className="text-slate-400">Net {cadenceFull} Return:</span>
                 <span className="font-bold text-emerald-400">
                   ${(viewMode === 'annual' ? activeTooltip.data.netBenefit : activeTooltip.data.cumNetBenefit).toLocaleString()}
                 </span>

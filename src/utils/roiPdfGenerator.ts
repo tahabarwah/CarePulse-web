@@ -28,6 +28,9 @@ export interface RoiReportData {
     netAnnualReturn: number;
     roiMultiple: string;
     paybackMonths: string;
+    projectedEfficiencyGainsPct?: number;
+    estimatedFteReduction?: number;
+    estimatedFteStandard?: number;
   };
 }
 

@@ -24,7 +24,7 @@ import {
   Zap
 } from 'lucide-react';
 import { downloadRoiReportPdf, RoiReportData } from '../utils/roiPdfGenerator';
-import { RoiProjectionD3Chart } from './RoiProjectionD3Chart';
+import { RoiProjectionD3Chart, SavingsCadence } from './RoiProjectionD3Chart';
 import { WorkflowCostComparisonTable } from './WorkflowCostComparisonTable';
 
 interface HealthcareRoiCalculatorProps {
@@ -81,6 +81,8 @@ export const HealthcareRoiCalculator: React.FC<HealthcareRoiCalculatorProps> = (
   // Modeling Projection Model: 'conservative' (risk-adjusted 0.85x) vs. 'aggressive' (accelerated 1.25x)
   const [projectionModel, setProjectionModel] = useState<'conservative' | 'aggressive'>('conservative');
   const scenarioMultiplier = projectionModel === 'aggressive' ? 1.25 : 0.85;
+  // Savings Cadence View: 'monthly', 'quarterly', or 'annual'
+  const [savingsCadence, setSavingsCadence] = useState<SavingsCadence>('annual');
   const [copied, setCopied] = useState<boolean>(false);
 
   // PDF Export Modal and Customization State
@@ -153,6 +155,16 @@ export const HealthcareRoiCalculator: React.FC<HealthcareRoiCalculatorProps> = (
     const roiMultiple = estimatedAnnualCost > 0 ? (totalAnnualValue / estimatedAnnualCost).toFixed(1) : '5.2';
     const paybackMonths = estimatedAnnualCost > 0 ? ((estimatedAnnualCost / (totalAnnualValue / 12))).toFixed(1) : '2.8';
 
+    // Projected Efficiency Gains %:
+    // Bedside handoff duration reduced from 45 min baseline to 17 min = 28 min reduction
+    // Efficiency gain in shift transition & charting documentation
+    const projectedEfficiencyGainsPct = Math.round((28 / 45) * 100 * scenarioMultiplier);
+    
+    // Estimated FTE Reduction (Reclaimed capacity in nursing FTEs):
+    // Based on hospital inpatient nursing benchmark (1,920 productive shift hours/year per RN)
+    const estimatedFteReduction = Number((annualHoursSaved / 1920).toFixed(1));
+    const estimatedFteStandard = Number((annualHoursSaved / 2080).toFixed(1));
+
     return {
       annualHoursSaved,
       hoursPerRnAnnual,
@@ -167,22 +179,32 @@ export const HealthcareRoiCalculator: React.FC<HealthcareRoiCalculatorProps> = (
       netAnnualReturn,
       roiMultiple,
       paybackMonths,
+      projectedEfficiencyGainsPct,
+      estimatedFteReduction,
+      estimatedFteStandard,
     };
   }, [beds, rns, admissions, hourlyRate, scenarioMultiplier]);
 
   // Formatted string summary for clipboard or passing to demo notes
   const summaryText = useMemo(() => {
+    const cadenceMultiplier = savingsCadence === 'monthly' ? 1 / 12 : savingsCadence === 'quarterly' ? 1 / 4 : 1;
+    const cadenceLabel = savingsCadence === 'monthly' ? 'Monthly' : savingsCadence === 'quarterly' ? 'Quarterly' : 'Annual';
+    const cadenceSuffix = savingsCadence === 'monthly' ? '/mo' : savingsCadence === 'quarterly' ? '/qtr' : '/yr';
+
     return `[CarePulse ROI Projection]
 - Facility Profile: ${beds} Staffed Beds | ${rns} Bedside RNs | ${admissions.toLocaleString()} Annual Admissions
 - Primary EHR: ${ehrSystem} (Blended RN Rate: $${hourlyRate}/hr)
 - Modeled Scenario: ${projectionModel === 'aggressive' ? 'Aggressive Model (+25% adoption velocity)' : 'Conservative Model (-15% risk-adjusted)'}
-- Projected Annual Financial Value: $${calculations.totalAnnualValue.toLocaleString()}
-- Reclaimed Clinical Hours: ${calculations.annualHoursSaved.toLocaleString()} hrs/year (${calculations.hoursPerRnAnnual} hrs/nurse)
-- Overtime & Retention Savings: $${calculations.totalNursingBenefit.toLocaleString()}/year
+- Modeled Cadence View: ${cadenceLabel} ($${Math.round(calculations.totalAnnualValue * cadenceMultiplier).toLocaleString()} ${cadenceSuffix} | $${calculations.totalAnnualValue.toLocaleString()}/yr annualized)
+- Total Annual Savings: $${calculations.totalAnnualValue.toLocaleString()}
+- Projected Efficiency Gains: ${calculations.projectedEfficiencyGainsPct}% (Shift handoff & charting transition)
+- Estimated FTE Reduction: ${calculations.estimatedFteReduction} FTEs (${calculations.annualHoursSaved.toLocaleString()} hrs reclaimed)
+- Reclaimed Clinical Hours: ${Math.round(calculations.annualHoursSaved * cadenceMultiplier).toLocaleString()} hrs ${cadenceSuffix} (${calculations.annualHoursSaved.toLocaleString()} hrs/year total)
+- Overtime & Retention Savings: $${Math.round(calculations.totalNursingBenefit * cadenceMultiplier).toLocaleString()} ${cadenceSuffix} ($${calculations.totalNursingBenefit.toLocaleString()}/year)
 - Avoidable Bed-Days Saved: ${calculations.avoidableBedDaysSaved.toLocaleString()} days ($${calculations.bedCapacityValue.toLocaleString()} capacity value)
 - Workflow Comparison: Reclaims $${calculations.netAnnualReturn.toLocaleString()}/yr net operating capacity across shift handoffs, charting overtime, retention, and bed throughput
 - Estimated Payback Period: ${calculations.paybackMonths} months (${calculations.roiMultiple}x ROI multiple)`;
-  }, [beds, rns, admissions, ehrSystem, hourlyRate, projectionModel, calculations]);
+  }, [beds, rns, admissions, ehrSystem, hourlyRate, projectionModel, savingsCadence, calculations]);
 
   const handleCopySummary = () => {
     navigator.clipboard.writeText(summaryText);
@@ -625,6 +647,112 @@ export const HealthcareRoiCalculator: React.FC<HealthcareRoiCalculatorProps> = (
               </div>
             </div>
 
+            {/* Executive Summary Cards: Total Annual Savings, Projected Efficiency Gains %, Estimated FTE Reduction */}
+            <div 
+              id="roi-summary-cards-row"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+            >
+              {/* Card 1: Total Annual Savings */}
+              <div 
+                id="summary-card-total-annual-savings"
+                className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs flex flex-col justify-between transition-all hover:border-teal-300 hover:shadow-sm"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      Total Annual Savings
+                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-100/80 text-teal-700 flex items-center justify-center">
+                      <DollarSign className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div 
+                    id="kpi-val-total-annual-savings"
+                    className="text-2xl sm:text-3xl font-extrabold text-teal-900 font-sans tracking-tight"
+                  >
+                    ${calculations.totalAnnualValue >= 1000000 
+                      ? `${(calculations.totalAnnualValue / 1000000).toFixed(2)}M` 
+                      : calculations.totalAnnualValue.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                    Gross recurring operational savings across shift transitions, overtime avoidance, and bed throughput.
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-500 font-medium">Net Operational Return</span>
+                  <span className="font-bold text-emerald-700 font-sans">
+                    ${calculations.netAnnualReturn.toLocaleString()} / yr
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 2: Projected Efficiency Gains % */}
+              <div 
+                id="summary-card-projected-efficiency-gains"
+                className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs flex flex-col justify-between transition-all hover:border-indigo-300 hover:shadow-sm"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      Projected Efficiency Gains %
+                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100/80 text-indigo-700 flex items-center justify-center">
+                      <Zap className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div 
+                    id="kpi-val-projected-efficiency-gains"
+                    className="text-2xl sm:text-3xl font-extrabold text-indigo-900 font-sans tracking-tight flex items-baseline gap-1.5"
+                  >
+                    <span>{calculations.projectedEfficiencyGainsPct}%</span>
+                    <span className="text-xs font-semibold text-indigo-600">faster handoffs</span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                    Eliminates 28 minutes of manual documentation latency per nurse during each 12-hour shift transition.
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-500 font-medium">Reclaimed Time</span>
+                  <span className="font-bold text-indigo-700 font-sans">
+                    {calculations.hoursPerRnAnnual} hrs / nurse / yr
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 3: Estimated FTE Reduction */}
+              <div 
+                id="summary-card-estimated-fte-reduction"
+                className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs flex flex-col justify-between transition-all hover:border-purple-300 hover:shadow-sm"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      Estimated FTE Reduction
+                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-purple-50 border border-purple-100/80 text-purple-700 flex items-center justify-center">
+                      <Users className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div 
+                    id="kpi-val-estimated-fte-reduction"
+                    className="text-2xl sm:text-3xl font-extrabold text-purple-900 font-sans tracking-tight flex items-baseline gap-1.5"
+                  >
+                    <span>{calculations.estimatedFteReduction} FTEs</span>
+                    <span className="text-xs font-semibold text-purple-600">reclaimed</span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                    Clinical capacity redirected to patient care without layoffs, alleviating traveling nurse reliance.
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-500 font-medium">Clinical Hours Reclaimed</span>
+                  <span className="font-bold text-purple-700 font-sans">
+                    {calculations.annualHoursSaved.toLocaleString()} hrs / yr
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Visual D3 Bar Chart: 3-Year Cost Savings vs. Operational Time Projection */}
             <RoiProjectionD3Chart
               totalAnnualValue={calculations.totalAnnualValue}
@@ -638,6 +766,8 @@ export const HealthcareRoiCalculator: React.FC<HealthcareRoiCalculatorProps> = (
               beds={beds}
               projectionModel={projectionModel}
               onToggleProjectionModel={setProjectionModel}
+              savingsCadence={savingsCadence}
+              onToggleSavingsCadence={setSavingsCadence}
             />
 
             {/* Side-by-Side Table: Current Manual Workflow Costs vs. CarePulse Optimized Workflow Costs */}
