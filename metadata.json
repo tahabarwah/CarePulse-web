@@ -1,0 +1,8 @@
+{
+  "name": "CarePulse - Healthcare Clinical Workflow Platform",
+  "description": "Enterprise B2B SaaS landing page for healthcare teams, care coordination, clinical workflows, and secure hospital operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
