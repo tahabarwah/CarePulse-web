@@ -9,12 +9,17 @@ import { Hero } from './components/Hero';
 import { ProductBenefits } from './components/ProductBenefits';
 import { ClinicalWorkflow } from './components/ClinicalWorkflow';
 import { RoleUseCases } from './components/RoleUseCases';
+import { PatientPortalPreview } from './components/PatientPortalPreview';
+import { CustomerSuccessStories } from './components/CustomerSuccessStories';
 import { SecurityCompliance } from './components/SecurityCompliance';
 import { IntegrationsSection } from './components/IntegrationsSection';
 import { DiagnosticTool } from './components/DiagnosticTool';
 import { FaqSection } from './components/FaqSection';
+import { HealthcareRoiCalculator } from './components/HealthcareRoiCalculator';
+import { ResourcesSection } from './components/ResourcesSection';
 import { DemoRequestSection } from './components/DemoRequestSection';
 import { Footer } from './components/Footer';
+import { LiveChatWidget } from './components/LiveChatWidget';
 import { X, Sparkles, Calendar, ArrowRight } from 'lucide-react';
 
 export default function App() {
@@ -72,7 +77,18 @@ export default function App() {
           onOpenDemo={() => scrollToDemo()}
         />
 
-        {/* 5. Enterprise Security & Compliance Overview */}
+        {/* 5. Patient Portal & Bedside Care Timeline Preview */}
+        <PatientPortalPreview
+          onOpenDemo={() => scrollToDemo()}
+        />
+
+        {/* 6. Customer Success Stories & Hospital Administrator Testimonials */}
+        <CustomerSuccessStories
+          onOpenDemo={() => scrollToDemo()}
+          onOpenDiagnostic={() => scrollToDiagnostic()}
+        />
+
+        {/* 6. Enterprise Security & Compliance Overview */}
         <SecurityCompliance
           onOpenDemo={() => scrollToDemo()}
         />
@@ -90,7 +106,18 @@ export default function App() {
         {/* 8. Frequently Asked Questions */}
         <FaqSection />
 
-        {/* 9. Request a Demo Form & Interactive Scheduling */}
+        {/* 9. Healthcare ROI & Operational Efficiency Calculator */}
+        <HealthcareRoiCalculator
+          onApplyToDemo={(roiNotes) => scrollToDemo(roiNotes)}
+        />
+
+        {/* 10. Clinical Research Whitepapers & Executive Resources */}
+        <ResourcesSection
+          onOpenDemo={() => scrollToDemo()}
+          onOpenDiagnostic={() => scrollToDiagnostic()}
+        />
+
+        {/* 11. Request a Demo Form & Interactive Scheduling */}
         <DemoRequestSection
           initialNotes={diagnosticAttachedNotes}
         />
@@ -98,6 +125,12 @@ export default function App() {
 
       {/* Global Footer with Regulatory Notices */}
       <Footer
+        onOpenDemo={() => scrollToDemo()}
+        onOpenDiagnostic={() => scrollToDiagnostic()}
+      />
+
+      {/* Floating Live Chat Widget */}
+      <LiveChatWidget
         onOpenDemo={() => scrollToDemo()}
         onOpenDiagnostic={() => scrollToDiagnostic()}
       />

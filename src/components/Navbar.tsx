@@ -112,6 +112,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
                 Role Solutions
               </button>
               <button
+                onClick={() => scrollToSection('patient-portal')}
+                className="hover:text-teal-700 transition-colors cursor-pointer py-1 text-teal-800 font-semibold"
+              >
+                Patient Portal
+              </button>
+              <button
+                onClick={() => scrollToSection('success-stories')}
+                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
+              >
+                Success Stories
+              </button>
+              <button
                 onClick={() => scrollToSection('security')}
                 className="hover:text-teal-700 transition-colors cursor-pointer py-1 flex items-center gap-1"
               >
@@ -129,6 +141,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
                 className="hover:text-teal-700 transition-colors cursor-pointer py-1"
               >
                 FAQs
+              </button>
+              <button
+                onClick={() => scrollToSection('roi-calculator')}
+                className="hover:text-teal-700 transition-colors cursor-pointer py-1 text-teal-800 font-semibold"
+              >
+                ROI Calculator
+              </button>
+              <button
+                onClick={() => scrollToSection('resources')}
+                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
+              >
+                Resources
               </button>
             </nav>
 
@@ -189,6 +213,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
                 Role-Based Use Cases
               </button>
               <button
+                onClick={() => scrollToSection('patient-portal')}
+                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-teal-800 font-semibold"
+              >
+                Patient Portal Preview
+              </button>
+              <button
+                onClick={() => scrollToSection('success-stories')}
+                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
+              >
+                Customer Success Stories
+              </button>
+              <button
                 onClick={() => scrollToSection('security')}
                 className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700 flex items-center gap-2"
               >
@@ -206,6 +242,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
                 className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
               >
                 FAQs
+              </button>
+              <button
+                onClick={() => scrollToSection('roi-calculator')}
+                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-teal-800 font-semibold"
+              >
+                ROI & Efficiency Calculator
+              </button>
+              <button
+                onClick={() => scrollToSection('resources')}
+                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
+              >
+                Whitepapers & Resources
               </button>
             </div>
 

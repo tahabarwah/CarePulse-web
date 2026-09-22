@@ -229,6 +229,57 @@ The acute operational friction at **${org}** stems from asynchronous communicati
     }
   });
 
+  // Resource & Whitepaper Lead Capture endpoint
+  const resourceLeads: Array<{
+    id: string;
+    fullName: string;
+    workEmail: string;
+    jobTitle: string;
+    organizationName: string;
+    ehrSystem: string;
+    resourceTitle: string;
+    capturedAt: string;
+  }> = [];
+
+  app.post('/api/resource-lead', (req, res) => {
+    try {
+      const {
+        fullName,
+        workEmail,
+        jobTitle,
+        organizationName,
+        ehrSystem,
+        resourceTitle,
+      } = req.body;
+
+      if (!fullName || !workEmail) {
+        return res.status(400).json({ error: 'Full name and hospital work email are required.' });
+      }
+
+      const lead = {
+        id: 'res-lead-' + Date.now(),
+        fullName,
+        workEmail,
+        jobTitle: jobTitle || 'Healthcare Leader',
+        organizationName: organizationName || 'Health System',
+        ehrSystem: ehrSystem || 'Epic Systems',
+        resourceTitle: resourceTitle || 'The Modern Acute Care Blueprint Whitepaper',
+        capturedAt: new Date().toISOString(),
+      };
+
+      resourceLeads.push(lead);
+
+      return res.json({
+        success: true,
+        message: 'Lead verified and recorded. Whitepaper download initiated.',
+        leadId: lead.id,
+      });
+    } catch (err: any) {
+      console.error('Error recording resource lead:', err);
+      return res.status(500).json({ error: 'Failed to record lead info.' });
+    }
+  });
+
   // Mount Vite or static assets
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

@@ -55,8 +55,28 @@ export const Footer: React.FC<FooterProps> = ({ onOpenDemo, onOpenDiagnostic }) 
                 </button>
               </li>
               <li>
+                <button onClick={() => scrollTo('patient-portal')} className="hover:text-white transition-colors cursor-pointer">
+                  Patient Bedside Portal
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollTo('success-stories')} className="hover:text-white transition-colors cursor-pointer">
+                  Success Stories
+                </button>
+              </li>
+              <li>
                 <button onClick={() => scrollTo('integrations')} className="hover:text-white transition-colors cursor-pointer">
                   FHIR R4 & EHR Interop
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollTo('roi-calculator')} className="hover:text-teal-400 transition-colors cursor-pointer font-medium">
+                  ROI & Efficiency Calculator
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollTo('resources')} className="hover:text-teal-400 transition-colors cursor-pointer">
+                  Clinical Whitepapers & Guides
                 </button>
               </li>
               <li>

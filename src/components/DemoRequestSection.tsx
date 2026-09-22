@@ -33,6 +33,16 @@ export const DemoRequestSection: React.FC<DemoRequestSectionProps> = ({ initialN
     notes: initialNotes || '',
   });
 
+  // Sync initialNotes if passed from ROI calculator or workflow diagnostic tool
+  React.useEffect(() => {
+    if (initialNotes) {
+      setFormData(prev => ({
+        ...prev,
+        notes: initialNotes,
+      }));
+    }
+  }, [initialNotes]);
+
   const [submitting, setSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<any | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

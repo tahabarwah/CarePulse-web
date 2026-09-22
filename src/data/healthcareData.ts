@@ -1,4 +1,4 @@
-import { BenefitItem, WorkflowStep, RoleUseCase, SecurityControl, IntegrationPartner, FaqItem } from '../types';
+import { BenefitItem, WorkflowStep, RoleUseCase, SecurityControl, IntegrationPartner, FaqItem, SuccessStory } from '../types';
 
 export const HERO_METRICS = [
   { value: '38%', label: 'Reduction in Shift Handoff Duration', sub: 'Measured across inpatient units' },
@@ -516,3 +516,121 @@ export const FAQ_LIST: FaqItem[] = [
     answer: 'A standard health system rollout takes between 6 to 12 weeks. This includes initial sandbox EHR connection (Weeks 1-3), interface validation and security audit review (Weeks 4-6), unit-level workflow pilot on 1-2 nursing units (Weeks 7-8), and phased hospital-wide Go-Live with on-floor clinical informatics support (Weeks 9-12).'
   }
 ];
+
+export const CUSTOMER_SUCCESS_STORIES: SuccessStory[] = [
+  {
+    id: 'dr-marcus-vance',
+    author: {
+      name: 'Dr. Marcus Vance, MD, MBA',
+      credentials: 'MD, MBA (Internal Medicine & Health Administration)',
+      title: 'Chief Medical Officer & VP of Clinical Quality',
+      department: 'Office of the CMO & Inpatient Medical Services',
+      organization: "St. Luke's Regional Health Network",
+      orgType: 'Regional Non-Profit Health System',
+      facilityScale: '7 Acute Hospitals • 1,240 Inpatient Beds',
+      avatarInitials: 'MV',
+      avatarBg: 'bg-teal-700',
+    },
+    headline: 'Reclaimed 1.4 hours in daily discharge velocity while eliminating interdisciplinary rounding friction',
+    quote: 'Before CarePulse, morning interdisciplinary rounds were bogged down by disparate clipboard sheets, missed consult pages, and fragmented verbal updates. CarePulse unified our hospitalists, bedside nurses, case managers, and clinical pharmacists onto a single synchronized real-time patient progression board. By resolving discharge barriers 24 to 48 hours early, we reclaimed afternoon bed capacity and significantly reduced emergency department boarding.',
+    ehrSystem: 'Epic Systems (SMART on FHIR)',
+    keyOutcomes: [
+      {
+        metric: '1.4 hrs',
+        label: 'Earlier Daily Discharge Order Placement',
+        context: 'Median placement shifted from 2:45 PM to 1:05 PM',
+      },
+      {
+        metric: '41%',
+        label: 'Reduction in Escalation Lag',
+        context: 'Critical lab and consult notifications expedited across shifts',
+      },
+      {
+        metric: '94%',
+        label: 'Physician Rounding Satisfaction',
+        context: 'Measured across 180+ attending hospitalists and fellows',
+      },
+    ],
+    challenge: 'Discharge planning across our 7 hospitals was historically reactive, causing afternoon bed gridlock and emergency department boarding times that frequently exceeded 4.5 hours.',
+    solutionImplemented: 'CarePulse Multidisciplinary Rounding Board and Proactive Discharge Milestones integrated directly into Epic provider workspaces via SMART on FHIR.',
+    deploymentTimeframe: 'Initial 8-week pilot on 2 medical-surgical floors, followed by full 7-hospital rollout over 4 months.',
+    verifiedGovernance: 'Enterprise BAA executed, annual SOC 2 Type II controls verified, zero model training on patient health information.',
+  },
+  {
+    id: 'elena-rostova',
+    author: {
+      name: 'Elena Rostova, DNP, RN, NEA-BC',
+      credentials: 'DNP, RN, NEA-BC (Nursing Executive Advanced)',
+      title: 'Chief Nursing Officer & VP of Patient Care Services',
+      department: 'Nursing Operations & Patient Care Executive Committee',
+      organization: 'MetroHealth Acute Care & Trauma Center',
+      orgType: 'Tertiary Academic Medical Center & Level 1 Trauma',
+      facilityScale: '640 Acute Beds • 1,450 Bedside Nurses',
+      avatarInitials: 'ER',
+      avatarBg: 'bg-emerald-700',
+    },
+    headline: 'Returned 28 minutes per nurse every shift while slashing interruptive noise by 52%',
+    quote: 'Nursing burnout is fundamentally tied to cognitive fragmentation. Our nursing staff used to spend over 40 minutes at each shift transition manually transcribing vitals, orders, and telemetry notes into informal paper sheets. CarePulse structured our handoffs using standardized SBAR templates that automatically pull live EHR data with clear digital acknowledgments. Our nurses leave their shifts on time, bedside transitions are seamless, and alert noise has dropped dramatically.',
+    ehrSystem: 'Oracle Health / Cerner Millennium',
+    keyOutcomes: [
+      {
+        metric: '28 mins',
+        label: 'Saved per Nurse per 12-hr Shift',
+        context: 'Shift handoff duration decreased from 42 mins to 14 mins',
+      },
+      {
+        metric: '52%',
+        label: 'Reduction in Non-Urgent Alert Noise',
+        context: 'Algorithmic alert bundling filtered repeat false telemetry alarms',
+      },
+      {
+        metric: '19%',
+        label: 'Improvement in 1st-Year RN Retention',
+        context: 'Directly linked to reduced post-shift charting overtime',
+      },
+    ],
+    challenge: 'Bedside nurses faced persistent cognitive fatigue from manual paper handoffs, fragmented telemetry pages during medication administration, and chronic shift-end overtime.',
+    solutionImplemented: 'Standardized SBAR Shift Handoff modules with automated FHIR R4 vital/lab population and intelligent alert triage delivered to clinical floor workstations and tablets.',
+    deploymentTimeframe: '6-week phased rollout across 18 acute inpatient units with 25-minute nursing in-service sessions.',
+    verifiedGovernance: 'Strict role-based access control (RBAC) ensuring minimum necessary data visibility; digital signature audit log aligned with Joint Commission standards.',
+  },
+  {
+    id: 'david-chen',
+    author: {
+      name: 'David Chen, MHA, FACHE',
+      credentials: 'MHA, FACHE (Fellow of the American College of Healthcare Executives)',
+      title: 'Chief Operating Officer & VP of Hospital Operations',
+      department: 'Hospital Administration & Patient Placement Operations',
+      organization: 'Pacific Horizon Health System',
+      orgType: 'Multi-Facility Community Healthcare System',
+      facilityScale: '4 Facilities • 480 Total Beds',
+      avatarInitials: 'DC',
+      avatarBg: 'bg-indigo-700',
+    },
+    headline: 'Achieved a 0.8-day reduction in avoidable length of stay with immediate bed-turnaround visibility',
+    quote: 'From an executive operations perspective, bed capacity and patient throughput dictate hospital viability. CarePulse provided our operations and patient placement command center with immediate, real-time visibility into bed-cleaning milestones, pending diagnostic clearances, and post-acute transfer approvals across all four acute facilities. The quantifiable impact on our length of stay and capacity management paid for the platform within the first two quarters.',
+    ehrSystem: 'MEDITECH Expanse & Epic Hybrid',
+    keyOutcomes: [
+      {
+        metric: '0.8 day',
+        label: 'Reduction in Avoidable Length of Stay',
+        context: 'Geometric mean inpatient LOS reduced from 4.7 to 3.9 days',
+      },
+      {
+        metric: '$3.2M',
+        label: 'Annualized Operational Value Generated',
+        context: 'Through expanded surgical admissions and reduced nursing overtime',
+      },
+      {
+        metric: '32 mins',
+        label: 'Faster Environmental Services Bed Turn',
+        context: 'Automated milestone triggers sent instantly to EVS & patient transport',
+      },
+    ],
+    challenge: 'Operations executives and bed placement coordinators lacked unified, cross-facility visibility into actual discharge progress, resulting in delayed turnover and emergency patient holds.',
+    solutionImplemented: 'Centralized Operational Throughput Command View connecting admission-discharge-transfer (ADT) feeds, transport milestones, and environmental services workflows.',
+    deploymentTimeframe: '10-week implementation encompassing 4 hospitals with bidirectional HL7 interface engine connectivity.',
+    verifiedGovernance: 'Annual third-party SOC 2 Type II audit report available under mutual NDA; enterprise SAML 2.0 SSO integrated with Imprivata badge readers.',
+  },
+];
+

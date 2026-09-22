@@ -89,3 +89,54 @@ export interface DiagnosticInput {
   clinicalBottlenecks: string;
   primaryGoal: string;
 }
+
+export interface SuccessStory {
+  id: string;
+  author: {
+    name: string;
+    credentials: string;
+    title: string;
+    department: string;
+    organization: string;
+    orgType: string;
+    facilityScale: string;
+    avatarInitials: string;
+    avatarBg: string;
+  };
+  headline: string;
+  quote: string;
+  ehrSystem: string;
+  keyOutcomes: {
+    metric: string;
+    label: string;
+    context: string;
+  }[];
+  challenge: string;
+  solutionImplemented: string;
+  deploymentTimeframe: string;
+  verifiedGovernance: string;
+}
+
+export interface ResourceLeadFormData {
+  fullName: string;
+  workEmail: string;
+  jobTitle: string;
+  organizationName: string;
+  ehrSystem: string;
+}
+
+export interface ClinicalResource {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: 'Whitepaper' | 'Executive Brief' | 'Implementation Guide' | 'Checklist';
+  badge: string;
+  readTime: string;
+  pageCount: string;
+  abstract: string;
+  topics: string[];
+  author: string;
+  publishDate: string;
+  featured?: boolean;
+}
+
