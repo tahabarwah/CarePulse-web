@@ -1,17 +1,8 @@
 import React from 'react';
-import { Activity, ShieldCheck, Lock, ExternalLink, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Activity, ShieldCheck, Lock } from 'lucide-react';
 
-interface FooterProps {
-  onOpenDemo: () => void;
-  onOpenDiagnostic: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenDemo, onOpenDiagnostic }) => {
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
+export const Footer: React.FC = () => {
   return (
     <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -45,44 +36,39 @@ export const Footer: React.FC<FooterProps> = ({ onOpenDemo, onOpenDiagnostic }) 
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Platform</h4>
             <ul className="space-y-2">
               <li>
-                <button onClick={() => scrollTo('benefits')} className="hover:text-white transition-colors cursor-pointer">
-                  Product Benefits
-                </button>
+                <Link to="/patient-overview" className="hover:text-teal-400 font-semibold transition-colors">
+                  Patient Overview (Command Center)
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('workflow')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/platform" className="hover:text-white transition-colors">
                   Clinical Pathway
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('patient-portal')} className="hover:text-white transition-colors cursor-pointer">
-                  Patient Bedside Portal
-                </button>
+                <Link to="/platform#patient-portal" className="hover:text-white transition-colors">
+                  Bedside Patient Portal
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('success-stories')} className="hover:text-white transition-colors cursor-pointer">
-                  Success Stories
-                </button>
+                <Link to="/platform#benefits" className="hover:text-white transition-colors">
+                  Product Capabilities
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('integrations')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/integrations" className="hover:text-white transition-colors">
                   FHIR R4 & EHR Interop
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('roi-calculator')} className="hover:text-teal-400 transition-colors cursor-pointer font-medium">
+                <Link to="/roi-calculator" className="hover:text-teal-400 transition-colors font-medium">
                   ROI & Efficiency Calculator
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('resources')} className="hover:text-teal-400 transition-colors cursor-pointer">
-                  Clinical Whitepapers & Guides
-                </button>
-              </li>
-              <li>
-                <button onClick={onOpenDiagnostic} className="hover:text-teal-400 transition-colors cursor-pointer">
+                <Link to="/diagnostic" className="hover:text-teal-400 transition-colors">
                   AI Workflow Diagnostic
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -92,56 +78,61 @@ export const Footer: React.FC<FooterProps> = ({ onOpenDemo, onOpenDiagnostic }) 
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Solutions</h4>
             <ul className="space-y-2">
               <li>
-                <button onClick={() => scrollTo('roles')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/solutions" className="hover:text-white transition-colors">
                   Physicians & CMIOs
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('roles')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/solutions" className="hover:text-white transition-colors">
                   Nursing Leadership & CNOs
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('roles')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/solutions" className="hover:text-white transition-colors">
                   Hospital Operations & COOs
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('roles')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/solutions" className="hover:text-white transition-colors">
                   Health IT & CISOs
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('roles')} className="hover:text-white transition-colors cursor-pointer">
-                  Care Coordinators
-                </button>
+                <Link to="/case-stories" className="hover:text-white transition-colors">
+                  Customer Success Stories
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Trust & Governance */}
+          {/* Column 3: Governance & Resources */}
           <div>
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Governance</h4>
             <ul className="space-y-2">
               <li>
-                <button onClick={() => scrollTo('security')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/security" className="hover:text-white transition-colors">
                   Security Architecture
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('security')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/security" className="hover:text-white transition-colors">
                   Business Associate Agreement (BAA)
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => scrollTo('faqs')} className="hover:text-white transition-colors cursor-pointer">
+                <Link to="/resources" className="hover:text-white transition-colors">
+                  Clinical Whitepapers
+                </Link>
+              </li>
+              <li>
+                <Link to="/resources" className="hover:text-white transition-colors">
                   Compliance FAQs
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={onOpenDemo} className="hover:text-white transition-colors cursor-pointer">
-                  Request Security Packet
-                </button>
+                <Link to="/demo" className="hover:text-teal-400 transition-colors font-medium">
+                  Schedule Consultation
+                </Link>
               </li>
             </ul>
           </div>
@@ -172,13 +163,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenDemo, onOpenDiagnostic }) 
               All Systems Operational (99.98% SLA)
             </span>
             <span>•</span>
-            <a href="#security" onClick={(e) => { e.preventDefault(); scrollTo('security'); }} className="hover:text-slate-300">
+            <Link to="/security" className="hover:text-slate-300">
               Security Notice
-            </a>
+            </Link>
             <span>•</span>
-            <a href="#demo" onClick={(e) => { e.preventDefault(); scrollTo('demo'); }} className="hover:text-slate-300">
+            <Link to="/demo" className="hover:text-slate-300">
               Contact Sales
-            </a>
+            </Link>
           </div>
         </div>
       </div>

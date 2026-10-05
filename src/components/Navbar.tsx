@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, ShieldCheck, ArrowRight, Menu, X, Sparkles, Building2, Stethoscope } from 'lucide-react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Activity, ShieldCheck, ArrowRight, Menu, X, Sparkles } from 'lucide-react';
 
-interface NavbarProps {
-  onOpenDemo: () => void;
-  onOpenDiagnostic: () => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) => {
+export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,13 +15,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
+  // Close mobile drawer on route transition
+  useEffect(() => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  }, [location.pathname]);
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `py-1 text-sm font-medium transition-colors whitespace-nowrap ${
+      isActive
+        ? 'text-teal-700 font-semibold border-b-2 border-teal-600'
+        : 'text-slate-600 hover:text-teal-700'
+    }`;
+
+  const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+      isActive
+        ? 'bg-teal-50 text-teal-800 font-semibold border-l-4 border-teal-600'
+        : 'text-slate-700 hover:bg-slate-50 hover:text-teal-700'
+    }`;
 
   return (
     <>
@@ -47,13 +55,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               Epic & Cerner FHIR R4 Ready
             </span>
-            <a 
-              href="#security" 
-              onClick={(e) => { e.preventDefault(); scrollToSection('security'); }}
+            <Link 
+              to="/security"
               className="hover:text-white transition-colors underline decoration-slate-600 underline-offset-2"
             >
               Security Overview
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -69,14 +76,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18">
-            {/* Logo */}
+            {/* Zone 1: Logo & Brand Mark */}
             <div className="flex items-center gap-3">
-              <a
-                href="#"
+              <Link
+                to="/"
                 className="flex items-center gap-2.5 group"
                 aria-label="CarePulse Home"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-500 flex items-center justify-center text-white shadow-md shadow-teal-700/20 group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-500 flex items-center justify-center text-white shadow-md shadow-teal-700/20 group-hover:scale-105 transition-transform shrink-0">
                   <Activity className="w-5 h-5" />
                 </div>
                 <div>
@@ -88,92 +95,55 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
                   </div>
                   <p className="text-[11px] text-slate-500 leading-tight hidden sm:block">Clinical Operations & Workflow Platform</p>
                 </div>
-              </a>
+              </Link>
             </div>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium text-slate-600">
-              <button
-                onClick={() => scrollToSection('benefits')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
-                Benefits
-              </button>
-              <button
-                onClick={() => scrollToSection('workflow')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
-                Clinical Pathway
-              </button>
-              <button
-                onClick={() => scrollToSection('roles')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
-                Role Solutions
-              </button>
-              <button
-                onClick={() => scrollToSection('patient-portal')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1 text-teal-800 font-semibold"
-              >
-                Patient Portal
-              </button>
-              <button
-                onClick={() => scrollToSection('success-stories')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
-                Success Stories
-              </button>
-              <button
-                onClick={() => scrollToSection('security')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1 flex items-center gap-1"
-              >
-                <ShieldCheck className="w-4 h-4 text-teal-600" />
-                Security & BAA
-              </button>
-              <button
-                onClick={() => scrollToSection('integrations')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
-                EHR Integrations
-              </button>
-              <button
-                onClick={() => scrollToSection('faqs')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
-                FAQs
-              </button>
-              <button
-                onClick={() => scrollToSection('roi-calculator')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1 text-teal-800 font-semibold"
-              >
+            {/* Zone 2: Navigation Links */}
+            <nav className="hidden lg:flex items-center space-x-5 text-sm font-medium">
+              <NavLink to="/platform" className={navLinkClass}>
+                Platform
+              </NavLink>
+              <NavLink to="/patient-overview" className={navLinkClass}>
+                Patient Overview
+              </NavLink>
+              <NavLink to="/solutions" className={navLinkClass}>
+                Solutions
+              </NavLink>
+              <NavLink to="/roi-calculator" className={navLinkClass}>
                 ROI Calculator
-              </button>
-              <button
-                onClick={() => scrollToSection('resources')}
-                className="hover:text-teal-700 transition-colors cursor-pointer py-1"
-              >
+              </NavLink>
+              <NavLink to="/integrations" className={navLinkClass}>
+                Integrations
+              </NavLink>
+              <NavLink to="/security" className={navLinkClass}>
+                Security
+              </NavLink>
+              <NavLink to="/case-stories" className={navLinkClass}>
+                Case Stories
+              </NavLink>
+              <NavLink to="/resources" className={navLinkClass}>
                 Resources
-              </button>
+              </NavLink>
             </nav>
 
-            {/* Actions */}
+            {/* Zone 3: Actions */}
             <div className="hidden sm:flex items-center gap-3">
-              <button
+              <Link
                 id="btn-nav-diagnostic"
-                onClick={onOpenDiagnostic}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg text-teal-800 bg-teal-50 border border-teal-200 hover:bg-teal-100 transition-all shadow-xs"
+                to="/diagnostic"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg text-teal-800 bg-teal-50 border border-teal-200 hover:bg-teal-100 transition-all shadow-xs whitespace-nowrap"
               >
                 <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-                AI Workflow Diagnostic
-              </button>
-              <button
+                AI Diagnostic
+              </Link>
+              <Link
                 id="btn-nav-demo"
-                onClick={onOpenDemo}
-                className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg text-white bg-teal-700 hover:bg-teal-800 active:bg-teal-900 transition-all shadow-sm shadow-teal-700/30"
+                to="/demo"
+                className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-lg text-white bg-teal-700 hover:bg-teal-800 active:bg-teal-900 transition-all shadow-sm shadow-teal-700/30 whitespace-nowrap"
               >
                 Request a Demo
                 <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Hamburger */}
@@ -192,86 +162,52 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenDiagnostic }) 
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg">
-            <div className="flex flex-col space-y-2 text-base font-medium text-slate-700">
-              <button
-                onClick={() => scrollToSection('benefits')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
-                Product Benefits
-              </button>
-              <button
-                onClick={() => scrollToSection('workflow')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
-                Clinical Pathway
-              </button>
-              <button
-                onClick={() => scrollToSection('roles')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
-                Role-Based Use Cases
-              </button>
-              <button
-                onClick={() => scrollToSection('patient-portal')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-teal-800 font-semibold"
-              >
-                Patient Portal Preview
-              </button>
-              <button
-                onClick={() => scrollToSection('success-stories')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
+          <div className="lg:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg max-h-[85vh] overflow-y-auto">
+            <div className="flex flex-col space-y-1">
+              <NavLink to="/" end className={mobileNavLinkClass}>
+                Overview (Home)
+              </NavLink>
+              <NavLink to="/patient-overview" className={mobileNavLinkClass}>
+                Patient Overview (Command Center)
+              </NavLink>
+              <NavLink to="/platform" className={mobileNavLinkClass}>
+                Platform & Clinical Pathway
+              </NavLink>
+              <NavLink to="/solutions" className={mobileNavLinkClass}>
+                Solutions by Role
+              </NavLink>
+              <NavLink to="/roi-calculator" className={mobileNavLinkClass}>
+                Healthcare ROI & Cost Model
+              </NavLink>
+              <NavLink to="/integrations" className={mobileNavLinkClass}>
+                EHR Integrations & Standards
+              </NavLink>
+              <NavLink to="/security" className={mobileNavLinkClass}>
+                Security & HIPAA Compliance
+              </NavLink>
+              <NavLink to="/case-stories" className={mobileNavLinkClass}>
                 Customer Success Stories
-              </button>
-              <button
-                onClick={() => scrollToSection('security')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700 flex items-center gap-2"
-              >
-                <ShieldCheck className="w-4 h-4 text-teal-600" />
-                Security & Compliance
-              </button>
-              <button
-                onClick={() => scrollToSection('integrations')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
-                EHR Integrations
-              </button>
-              <button
-                onClick={() => scrollToSection('faqs')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
-                FAQs
-              </button>
-              <button
-                onClick={() => scrollToSection('roi-calculator')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-teal-800 font-semibold"
-              >
-                ROI & Efficiency Calculator
-              </button>
-              <button
-                onClick={() => scrollToSection('resources')}
-                className="text-left px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-teal-700"
-              >
-                Whitepapers & Resources
-              </button>
+              </NavLink>
+              <NavLink to="/resources" className={mobileNavLinkClass}>
+                Resources, Whitepapers & FAQs
+              </NavLink>
             </div>
 
             <div className="pt-3 border-t border-slate-200 flex flex-col gap-2">
-              <button
-                onClick={() => { setMobileMenuOpen(false); onOpenDiagnostic(); }}
+              <Link
+                to="/diagnostic"
                 className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-teal-800 bg-teal-50 border border-teal-200 flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4 text-teal-600" />
                 AI Clinical Workflow Diagnostic
-              </button>
-              <button
-                onClick={() => { setMobileMenuOpen(false); onOpenDemo(); }}
+              </Link>
+              <Link
+                to="/demo"
                 className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-white bg-teal-700 hover:bg-teal-800 flex items-center justify-center gap-2"
               >
                 Request a Demo
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Link>
             </div>
           </div>
         )}

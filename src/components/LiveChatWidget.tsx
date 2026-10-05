@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   MessageSquare, 
   X, 
@@ -22,7 +23,7 @@ interface ChatMessage {
   timestamp: string;
   actions?: {
     label: string;
-    actionType: 'demo' | 'diagnostic' | 'security' | 'integrations' | 'stories' | 'roi' | 'resources' | 'patient-portal';
+    actionType: 'demo' | 'diagnostic' | 'security' | 'integrations' | 'stories' | 'roi' | 'resources' | 'patient-portal' | 'patient-overview';
   }[];
 }
 
@@ -55,6 +56,7 @@ export const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({
   onOpenDemo,
   onOpenDiagnostic,
 }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const [hasUnread, setHasUnread] = useState<boolean>(true);
@@ -103,23 +105,25 @@ export const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({
     setMessages(INITIAL_MESSAGES);
   };
 
-  const executeAction = (actionType: 'demo' | 'diagnostic' | 'security' | 'integrations' | 'stories' | 'roi' | 'resources' | 'patient-portal') => {
+  const executeAction = (actionType: 'demo' | 'diagnostic' | 'security' | 'integrations' | 'stories' | 'roi' | 'resources' | 'patient-portal' | 'patient-overview') => {
     if (actionType === 'demo') {
-      onOpenDemo();
+      navigate('/demo');
     } else if (actionType === 'diagnostic') {
-      onOpenDiagnostic();
+      navigate('/diagnostic');
     } else if (actionType === 'security') {
-      document.getElementById('security')?.scrollIntoView({ behavior: 'smooth' });
+      navigate('/security');
     } else if (actionType === 'integrations') {
-      document.getElementById('integrations')?.scrollIntoView({ behavior: 'smooth' });
+      navigate('/integrations');
     } else if (actionType === 'stories') {
-      document.getElementById('success-stories')?.scrollIntoView({ behavior: 'smooth' });
+      navigate('/case-stories');
     } else if (actionType === 'roi') {
-      document.getElementById('roi-calculator')?.scrollIntoView({ behavior: 'smooth' });
+      navigate('/roi-calculator');
     } else if (actionType === 'resources') {
-      document.getElementById('resources')?.scrollIntoView({ behavior: 'smooth' });
+      navigate('/resources');
     } else if (actionType === 'patient-portal') {
-      document.getElementById('patient-portal')?.scrollIntoView({ behavior: 'smooth' });
+      navigate('/platform#patient-portal');
+    } else if (actionType === 'patient-overview') {
+      navigate('/patient-overview');
     }
   };
 
@@ -162,6 +166,16 @@ export const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({
         actions: [
           { label: 'Read Nurse Executive Case Study', actionType: 'stories' },
           { label: 'Schedule Nursing Workflow Demo', actionType: 'demo' },
+        ],
+      };
+    }
+
+    if (lower.includes('patient overview') || lower.includes('command center') || lower.includes('triage') || lower.includes('census') || lower.includes('procedure') || lower.includes('ward')) {
+      return {
+        text: 'The CarePulse Patient Overview module provides a live clinical command center grid. It visualizes real-time unit census, vital telemetry thresholds, unacknowledged triage alerts (e.g. SIRS sepsis flags, SpO2 drops), and upcoming scheduled procedural transport queues.',
+        actions: [
+          { label: 'Launch Patient Command Center', actionType: 'patient-overview' },
+          { label: 'Schedule Live Walkthrough', actionType: 'demo' },
         ],
       };
     }
