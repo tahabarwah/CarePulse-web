@@ -1,6 +1,11 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Hero } from '../components/Hero';
+import { TrustComplianceStrip } from '../components/TrustComplianceStrip';
+import { CoreCapabilitiesGrid } from '../components/CoreCapabilitiesGrid';
+import { ClientTestimonials } from '../components/ClientTestimonials';
+import { FaqSection } from '../components/FaqSection';
+import { FloatingDemoButton } from '../components/FloatingDemoButton';
 import { 
   Activity, 
   ArrowRight, 
@@ -39,7 +44,10 @@ export const HomePage: React.FC = () => {
         onOpenDiagnostic={handleOpenDiagnostic}
       />
 
-      {/* 2. Platform Highlights & Multi-Page Navigation Grid */}
+      {/* 2. Enterprise Trust, Security & Regulatory Compliance Strip */}
+      <TrustComplianceStrip />
+
+      {/* 3. Platform Highlights & Multi-Page Navigation Grid */}
       <section className="py-16 bg-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">
@@ -215,7 +223,13 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Proof Bar / Validated Clinical Outcomes */}
+      {/* 4. Core Clinical Workflow Capabilities Grid */}
+      <CoreCapabilitiesGrid />
+
+      {/* 5. Partner Success Stories & Client Testimonials Social Proof */}
+      <ClientTestimonials />
+
+      {/* 4. Proof Bar / Validated Clinical Outcomes */}
       <section className="py-16 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -280,7 +294,14 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. Executive Call to Action Banner */}
+      {/* 5. Clinical Implementation FAQ Accordion */}
+      <FaqSection 
+        title="Clinical Implementation & Workflow FAQ"
+        subtitle="Common questions answered for floor nurses, attending hospitalists, CMIOs, and health system IT leaders."
+        badgeText="Clinical Team Implementation FAQ"
+      />
+
+      {/* 6. Executive Call to Action Banner */}
       <section className="py-16 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto">
@@ -309,6 +330,12 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 7. Floating 'Get a Demo' button when scrolled past Hero */}
+      <FloatingDemoButton
+        heroElementId="hero"
+        onOpenDemo={handleOpenDemo}
+      />
     </div>
   );
 };

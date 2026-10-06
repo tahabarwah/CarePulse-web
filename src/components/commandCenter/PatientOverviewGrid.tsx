@@ -511,7 +511,7 @@ export const PatientOverviewGrid: React.FC = () => {
       {filteredPatients.length > 0 ? (
         viewMode === 'grid' ? (
           /* Grid View */
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 min-[1680px]:grid-cols-4 gap-5 lg:gap-6 items-stretch">
             {filteredPatients.map(patient => (
               <PatientCommandCard
                 key={patient.id}

@@ -9,32 +9,32 @@ export const PatientOverviewPage: React.FC = () => {
     <div className="bg-slate-50/60 min-h-screen pb-16">
       {/* Page Header */}
       <div className="border-b border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+        <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
           <Breadcrumb items={[{ label: 'Clinical Command Center' }, { label: 'Patient Overview' }]} />
 
-          <div className="max-w-3xl mt-4">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded mb-3">
+          <div className="max-w-4xl mt-3">
+            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded mb-2.5">
               <Activity className="w-3.5 h-3.5 text-teal-600" />
               Live Clinical Command Center Simulation
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">
               Ward Patient Overview & Triage Command Center
             </h1>
-            <p className="mt-3 text-base sm:text-lg text-slate-600 leading-relaxed">
-              A high-density operational grid visualizing inpatient census, real-time vital telemetry alerts, upcoming procedural queues, and proactive discharge barrier resolution across acute hospital units.
+            <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed">
+              A high-density clinical operational grid visualizing inpatient census, real-time vital telemetry alerts, upcoming procedural queues, and proactive discharge barrier resolution across acute hospital units.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Main Command Center Module */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      {/* Main Command Center Module (Wider max-width for comfortable multi-column clinical cards) */}
+      <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         <PatientOverviewGrid />
       </div>
 
       {/* Technical Architecture Context Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="bg-slate-900 text-white p-8 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+      <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-teal-400 text-xs font-semibold">
               <Cpu className="w-4 h-4" />

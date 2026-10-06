@@ -65,7 +65,7 @@ export interface IntegrationPartner {
 export interface FaqItem {
   question: string;
   answer: string;
-  category: 'Security & BAA' | 'EHR Interoperability' | 'Clinical Adoption' | 'Pricing & Deployment';
+  category: string;
 }
 
 export interface DemoFormData {

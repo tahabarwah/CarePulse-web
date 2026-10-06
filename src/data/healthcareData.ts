@@ -476,44 +476,54 @@ export const INTEGRATIONS_LIST: IntegrationPartner[] = [
 
 export const FAQ_LIST: FaqItem[] = [
   {
-    category: 'Security & BAA',
-    question: 'How does CarePulse handle HIPAA obligations and Business Associate Agreements (BAAs)?',
-    answer: 'CarePulse operates strictly as a Business Associate for covered healthcare entities under HIPAA. Prior to ingesting any Protected Health Information (PHI), we execute a comprehensive, mutual Business Associate Agreement (BAA). Our technical safeguards mandate AES-256 encryption at rest, TLS 1.3 in transit, role-based access control (RBAC), and immutable audit logging for all interactions. We never sell, monetize, or use customer PHI to train generalized third-party AI models.'
+    category: 'Clinical Workflow & Adoption',
+    question: 'Will bedside nurses or floor physicians have to dual-chart in both CarePulse and our legal EHR?',
+    answer: 'Absolutely not. CarePulse operates as an operational workflow overlay via bidirectional SMART on FHIR R4 and HL7 ADT/ORM/ORU feeds. Patient demographics, active orders, live vitals, and lab results stream continuously from Epic, Cerner, or MEDITECH. Workflow milestones—such as SBAR shift handoff completions, rounding notes, and discharge readiness barrier clearances—are automatically written back into your EHR legal record. Clinicians never double-chart.'
   },
   {
-    category: 'Security & BAA',
-    question: 'What third-party security audits and certifications can we review?',
-    answer: 'We provide annual SOC 2 Type II attestation reports issued by an accredited independent CPA firm under NDA. Additionally, our control framework aligns with HITRUST Common Security Framework (CSF) specifications, and our infrastructure undergoes regular third-party penetration testing. You can request our comprehensive Security & Compliance Architecture Packet directly via our demo form.'
-  },
-  {
-    category: 'EHR Interoperability',
-    question: 'Does CarePulse require replacing our current EHR or double-charting?',
-    answer: 'Absolutely not. CarePulse is designed as a complementary operational orchestration overlay, not a replacement for your legal system of record. Through SMART-on-FHIR and bidirectional HL7 feeds, CarePulse reads patient demographics, orders, and lab results, and pushes workflow milestones (such as handoff completions or discharge readiness flags) back into your EHR. Clinicians never need to double-chart.'
+    category: 'Clinical Workflow & Adoption',
+    question: 'How much training time is required for floor nurses and attending physicians during hospital roll-out?',
+    answer: 'Because CarePulse adopts intuitive clinical paradigms (standard SBAR transition packets, visual Kanban patient progression boards, and one-tap milestone updates), bedside floor nurses achieve full proficiency in a single 25-minute in-service session. Attending physicians require less than 10 minutes of orientation. Imprivata tap-in proximity badge integration ensures zero login friction at shared floor workstations and WOWs (workstations on wheels).'
   },
   {
     category: 'EHR Interoperability',
-    question: 'Which integration protocols and interface engines are supported?',
+    question: 'What does the implementation roadmap look like from contract signing to acute ward Go-Live?',
+    answer: 'A standard hospital deployment follows a structured 6-to-10-week implementation roadmap across four distinct phases: Weeks 1-2 (SMART on FHIR sandbox connection and interface validation), Weeks 3-4 (Security compliance review, BAA sign-off, and HL7 listener configuration), Weeks 5-6 (Pilot launch on 1-2 acute inpatient units with on-floor champions), and Weeks 7-10 (Phased hospital-wide Go-Live supported by our dedicated clinical informatics team).'
+  },
+  {
+    category: 'Patient Safety & Telemetry',
+    question: 'How does CarePulse mitigate telemetry alarm noise and alert fatigue instead of adding another noisy pager?',
+    answer: 'CarePulse utilizes clinical context bundling algorithms that suppress repetitive non-actionable false alarms (such as transient pulse-oximeter baseline dips during patient ambulation). Non-urgent tasks are grouped into shift milestone batches, while acute physiological deterioration flags trigger intelligent escalation cascades: if an alert remains unacknowledged for over 4 minutes, it automatically cascades to the unit charge nurse and covering hospitalist.'
+  },
+  {
+    category: 'Reliability & Architecture',
+    question: 'What happens during scheduled EHR patch maintenance or unplanned hospital network downtime?',
+    answer: 'CarePulse incorporates an offline-first caching layer for active floor rosters and patient milestone cards. If hospital network connectivity or EHR interface engines pause for maintenance, local workstations and nursing floor displays maintain the most recently synchronized census and queue local updates. Once network connectivity is restored, all queued transitions synchronize bidirectionally with cryptographic conflict resolution.'
+  },
+  {
+    category: 'Security & Governance',
+    question: 'Does CarePulse sign Business Associate Agreements (BAAs), and is it audit-ready for The Joint Commission?',
+    answer: 'Yes. CarePulse executes comprehensive, mutual Business Associate Agreements (BAAs) prior to ingesting any Protected Health Information (PHI). We maintain annual SOC 2 Type II attestation, enforce AES-256 encryption at rest and TLS 1.3 in transit, and strictly adhere to the HIPAA Minimum Necessary rule. All clinical handoff packets, digital signatures, and milestone transitions are recorded in immutable, timestamped audit logs compliant with Joint Commission standards.'
+  },
+  {
+    category: 'Reliability & Architecture',
+    question: 'Which clinical hardware, workstations, and mobile devices are supported on nursing floors?',
+    answer: 'CarePulse is a zero-footprint web application optimized for standard nursing station displays, Workstations on Wheels (WOWs), wall-mounted room displays, Apple iPads, and clinical smartphones (Apple iOS, Zebra TC5x/TC52-HC, and Spectralink). It requires no local client installation or heavyweight mobile device management (MDM) dependencies, rendering cleanly in standard browsers with touch and barcode scanner support.'
+  },
+  {
+    category: 'Clinical Workflow & Adoption',
+    question: 'How are case managers, physical therapists, and clinical pharmacists integrated into daily rounds?',
+    answer: 'Ancillary teams share the exact same synchronized real-time patient progression board. When an attending physician sets an estimated discharge date, CarePulse automatically queues proactive milestones for clinical pharmacy (Meds-to-Beds prescription prep), physical therapy (inpatient mobility clearance), and case management (prior authorizations and post-acute SNF placement), eliminating morning-of-discharge surprises.'
+  },
+  {
+    category: 'EHR Interoperability',
+    question: 'Which integration protocols and healthcare interface engines are supported?',
     answer: 'We support HL7 v2.x (ADT admissions, ORM orders, ORU observation results) and modern FHIR R4 APIs (Encounter, CarePlan, Task, Observation, Communication). CarePulse connects with all standard healthcare interface engines, including Cloverleaf, Mirth Connect (NextGen Connect), Lyniate Corepoint/Rhapsody, and native Epic Bridges / Cerner Open Developer environments.'
   },
   {
-    category: 'Clinical Adoption',
-    question: 'What is the typical time required to train floor nurses and physicians?',
-    answer: 'Because CarePulse adopts familiar clinical paradigms (standard SBAR tables, visual Kanban rounding boards, and one-tap acknowledgments), floor nurses typically master the tool in a single 25-minute in-service session. Attending physicians require less than 10 minutes of orientation. Imprivata badge-tap integration ensures zero friction during shift changeovers.'
-  },
-  {
-    category: 'Clinical Adoption',
-    question: 'Is CarePulse considered a medical device or diagnostic clinical tool?',
-    answer: 'No. CarePulse is an operational workflow orchestration and clinical team coordination software platform. It provides administrative task management, shift handoff structure, and communication facilitation. CarePulse is not a diagnostic medical device, does not provide autonomous clinical diagnoses, and does not replace the professional clinical judgment of licensed physicians and healthcare professionals.'
-  },
-  {
     category: 'Pricing & Deployment',
-    question: 'How is CarePulse licensed, and what deployment options exist?',
+    question: 'How is CarePulse licensed, and what deployment options exist for health systems?',
     answer: 'CarePulse is licensed on an annual enterprise B2B SaaS subscription model based on licensed inpatient bed capacity or active clinician seat tiers, with no punitive per-message or per-transaction fees. Deployment options include multi-tenant cloud with logical data isolation or dedicated single-tenant Virtual Private Clouds (VPC) hosted in US healthcare-grade regions.'
-  },
-  {
-    category: 'Pricing & Deployment',
-    question: 'What does the implementation timeline look like from contract signing to Go-Live?',
-    answer: 'A standard health system rollout takes between 6 to 12 weeks. This includes initial sandbox EHR connection (Weeks 1-3), interface validation and security audit review (Weeks 4-6), unit-level workflow pilot on 1-2 nursing units (Weeks 7-8), and phased hospital-wide Go-Live with on-floor clinical informatics support (Weeks 9-12).'
   }
 ];
 
